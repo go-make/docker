@@ -22,7 +22,7 @@ docker-rm-$(4)    : _org:=$(if $(3),$(3)/,)
 
 docker-build-$(4) \
 docker-push-$(4)  \
-docker-rm-$(4)    : _image_version:=$$(_registry)$$(_org)$(4):$(if $(5),$(5),latest)
+docker-rm-$(4)    : _image_version:=$$(_registry)$$(_org)$(4):$(if $(5),$(5),$$(call GET_IMAGE_VERSION))
 
 docker-build-$(4) \
 docker-push-$(4)  \
