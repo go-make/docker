@@ -50,8 +50,12 @@ docker-push-$(4):
 docker-rm-$(4):
 	-docker image rm -f $$(_image_version)
 	-docker image rm -f $$(_image_latest)
+
+clean:: docker-rm-$(4)
 endef
 
+.PHONY: clean
+clean::
 
 GIT_TAG:=$(patsubst v%,%,$(shell git describe --tags 2> /dev/null))
 define GET_IMAGE_VERSION
@@ -74,8 +78,8 @@ endif
 #  define a few helper rules for installing common apps
 
 CA_BUNDLE:=.cache/ca-bundle.crt
-DUMB_INIT:=.cache/dumb-init
-CONSUL_TEMPLATE:=.cache/consul-template
+DUMB_INIT:=.cache/bin/dumb-init
+CONSUL_TEMPLATE:=.cache/bin/consul-template
 
 CONSUL_TEMPLATE_VERSION?=0.19.4
 
@@ -85,17 +89,21 @@ CONSUL_TEMPLATE_VERSION?=0.19.4
 $(CA_BUNDLE): .cache
 	curl -sL https://mkcert.org/generate/ > $@
 
-$(DUMB_INIT): .cache
+$(DUMB_INIT): .cache/bin
 	$(call PROMPT,Downloading dumb-init)
 	curl -sL https://github.com/boyvinall/dumb-init/releases/download/latest/dumb-init > $@
 	chmod +x $@
 	touch $@
 
-$(CONSUL_TEMPLATE): .cache
+$(CONSUL_TEMPLATE): .cache/bin
 	$(call PROMPT,Downloading consul-template)
 	curl -sL https://releases.hashicorp.com/consul-template/$(CONSUL_TEMPLATE_VERSION)/consul-template_$(CONSUL_TEMPLATE_VERSION)_linux_amd64.tgz | tar -xz -f- -C$(dir $@)
 	chmod +x $@
 	touch $@
 
-.cache:
+.cache .cache/bin:
 	mkdir -p $@
+
+.PHONY: clobber
+clobber:: clean
+	rm -rf .cache
