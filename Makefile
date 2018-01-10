@@ -70,7 +70,7 @@ docker-build:
 	$(call PROMPT,$@)
 	rm -f $(TAR_FILE)
 	docker build --rm --force-rm -t $(IMAGE_LATEST) -f $(DOCKERFILE) .
-	[ "$(IMAGE_VERSION)" == "latest" ] || docker tag $(IMAGE_LATEST) $(IMAGE_NAME)
+	if [ "$(IMAGE_VERSION)" != "latest" ]; then docker tag $(IMAGE_LATEST) $(IMAGE_NAME); fi
 
 .PHONY: clean
 clean::
