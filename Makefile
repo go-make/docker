@@ -124,3 +124,7 @@ ca-bundle.crt:
 .PHONY: docker-clean
 docker-clean:
 	docker images | grep '<none>' | gawk '{ print $$3 }' | xargs docker rmi
+
+.PHONY: docker-login
+docker-login:
+	echo "$$DOCKER_PASSWORD" | docker login -u "$$DOCKER_USERNAME" --password-stdin $(DOCKER_REGISTRY)
