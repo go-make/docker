@@ -74,6 +74,10 @@ define PROMPT
 endef
 endif
 
+.PHONY: docker-login
+docker-login:
+	echo "$$DOCKER_PASSWORD" | docker login -u "$$DOCKER_USERNAME" --password-stdin $(DOCKER_REGISTRY)
+
 #----------------------------------------------------------
 #  define a few helper rules for installing common apps
 
