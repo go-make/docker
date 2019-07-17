@@ -37,7 +37,7 @@ docker-build: docker-build-$(4)
 docker-build-$(4): $$(_dockerfile)
 	$(call PROMPT,Build $$(_image_version))
 	docker build --rm --force-rm -t $$(_image_version) -f $$(_dockerfile) $$(_context)
-	[ "$$(_image_version)" == "$$(_image_latest)" ] || docker tag $$(_image_version) $$(_image_latest)
+	if [ "$$(_image_version)" != "$$(_image_latest)" ]; then docker tag $$(_image_version) $$(_image_latest); fi
 
 .PHONY: docker-push-$(4)
 docker-push: docker-push-$(4)
@@ -74,9 +74,11 @@ define PROMPT
 endef
 endif
 
+ifdef DOCKER_PASSWORD
 .PHONY: docker-login
 docker-login:
 	echo "$$DOCKER_PASSWORD" | docker login -u "$$DOCKER_USERNAME" --password-stdin $(DOCKER_REGISTRY)
+endif
 
 #----------------------------------------------------------
 #  define a few helper rules for installing common apps
