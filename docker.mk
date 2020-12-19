@@ -6,6 +6,7 @@
 #  $(4) - image name
 #  $(5) - image version (optional)
 #  $(6) - docker build context (optional)
+#  $(7) - docker build argument (optional)
 
 define DOCKER_BUILD
 docker-build-$(4) \
@@ -32,11 +33,15 @@ docker-build-$(4) \
 docker-push-$(4)  \
 docker-rm-$(4)    : _context:=$(if $(6),$(6),.)
 
+docker-build-$(4) \
+docker-push-$(4)  \
+docker-rm-$(4)    : _args:=$(if $(7),$(7),)
+
 .PHONY: docker-build-$(4)
 docker-build: docker-build-$(4)
 docker-build-$(4): $$(_dockerfile)
 	$(call PROMPT,Build $$(_image_version))
-	docker build --rm --force-rm -t $$(_image_version) -f $$(_dockerfile) $$(_context)
+	docker build --rm --force-rm $$(_args) -t $$(_image_version) -f $$(_dockerfile) $$(_context)
 	if [ "$$(_image_version)" != "$$(_image_latest)" ]; then docker tag $$(_image_version) $$(_image_latest); fi
 
 .PHONY: docker-push-$(4)
